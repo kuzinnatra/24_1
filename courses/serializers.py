@@ -12,11 +12,7 @@ class CoursSerializer(ModelSerializer):
         fields = "__all__"
 
 
-
-
-
 class LessonSerializer(ModelSerializer):
     class Meta:
         model = Lesson
-        fields = '__all__'
-
+        fields = "__all__"
