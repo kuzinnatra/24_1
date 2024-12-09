@@ -61,8 +61,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('NAME'), # Название БД
+        'USER': os.getenv('USER'), # Пользователь для подключения
+        'PASSWORD': os.getenv('PASSWORD'), # Пароль для этого пользователя
+        'HOST': os.getenv('HOST'), # Адрес, на котором развернут сервер БД
+        'PORT': os.getenv('PORT'), # Порт, на котором работает сервер БД
     }
 }
 
@@ -97,13 +101,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
