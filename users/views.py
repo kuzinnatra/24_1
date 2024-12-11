@@ -1,4 +1,7 @@
+
+
 from django.shortcuts import render
+from rest_framework import filters
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
@@ -41,6 +44,9 @@ class PaymentCreateApiView(CreateAPIView):
 class PaymentListApiView(ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
+    filterset_fields = ('paid_course', 'paid_lesson', 'payment_type',)
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ('payment_date', )
 
 
 class PaymentRetrieveApiView(RetrieveAPIView):

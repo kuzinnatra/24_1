@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "users",
     "courses",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -56,15 +57,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"]
+}
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.getenv("NAME"),  # Название БД
-        "USER": "postgres",  # Пользователь для подключения
+        "USER": os.getenv("USER"),  # Пользователь для подключения
         "PASSWORD": os.getenv("PASSWORD"),  # Пароль для этого пользователя
         "HOST": os.getenv("HOST"),  # Адрес, на котором развернут сервер БД
         "PORT": os.getenv("PORT"),  # Порт, на котором работает сервер БД
