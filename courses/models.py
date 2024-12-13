@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Cours(models.Model):
     name = models.CharField(
         max_length=100,
@@ -17,7 +16,6 @@ class Cours(models.Model):
         blank=True,
         null=True,
     )
-
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
@@ -49,7 +47,6 @@ class Lesson(models.Model):
         verbose_name="Cсылка на видео",
         help_text="Вставьте ссылку на видео урока",
     )
-
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"

@@ -1,7 +1,4 @@
-from rest_framework import serializers
-from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
+from rest_framework.serializers import ModelSerializer
 from users.models import User, Payment
 
 
