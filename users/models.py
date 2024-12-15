@@ -4,7 +4,7 @@ from datetime import datetime
 from courses.models import Cours, Lesson
 
 class User(AbstractUser):
-    usermame = None
+    username = None
 
     email = models.EmailField(
         unique=True, verbose_name="Почта", help_text="Укажите почту"
@@ -31,8 +31,9 @@ class User(AbstractUser):
         help_text="Загрузите аватар",
     )
 
-    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+    USERNAME_FIELD = "email"
+
 
     class Meta:
         verbose_name = "Пользователь"

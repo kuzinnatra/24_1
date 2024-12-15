@@ -1,6 +1,7 @@
 from django.db import models
 from config import settings
 
+
 class Cours(models.Model):
     name = models.CharField(
         max_length=100,
@@ -17,9 +18,14 @@ class Cours(models.Model):
         blank=True,
         null=True,
     )
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
+
+
 
 
 class Lesson(models.Model):
@@ -49,6 +55,7 @@ class Lesson(models.Model):
         help_text="Вставьте ссылку на видео урока",
     )
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
