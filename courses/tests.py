@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Cours, Lesson
+from .models import Cours, Lesson, Subscription
 from users.models import User
 
 
@@ -93,29 +93,74 @@ class LessonTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-class CoursTestCase(APITestCase):
+# class CoursTestCase(APITestCase):
 
+    # def setUp(self):
+    #     self.user = User.objects.create(email='user22@sky.pro')
+    #     self.cours = Cours.objects.create(name='Основы языка Python', description='Азы программирования на Python')
+    #     self.client.force_authenticate(user=self.user)
+
+    # def test_create_cours(self):
+    #     '''тест на создание курса'''
+    #     self.client.force_authenticate(user=self.user)
+    #     url = reverse('courses:coursses-list')
+    #     data = {
+    #         'name': 'Мой первый курс',
+    #         'description': 'Самый первый курс'
+    #     }
+    #     response = self.client.post(url, data)
+    #
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #
+    # def test_update_cours(self):
+    #     '''тест на обновление курса'''
+    #     self.client.force_authenticate(user=self.user)
+    #     url = reverse('courses:coursses-detail', args=(self.cours.pk,))
+    #     data = {'name': 'Новая версия курса'}
+    #     response = self.client.patch(url, data)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class SubscriptionTestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create(email='user22@sky.pro')
-        self.cours = Cours.objects.create(name='Основы языка Python', description='Азы программирования на Python')
+        self.user = User.objects.create(email='user344@sky.pro')
+        self.course = Cours.objects.create(name='Курс 7', description='Описание курса 7')
+        self.lesson = Lesson.objects.create(name='первый урок курса 7', cours=self.course, owner=self.user)
+        self.subscription = Subscription.objects.create(user=self.user, course=self.course)
         self.client.force_authenticate(user=self.user)
 
-    def test_create_cours(self):
-        '''тест на создание курса'''
-        self.client.force_authenticate(user=self.user)
-        url = reverse('courses:coursses-list')
-        data = {
-            'name': 'Мой первый курс',
-            'description': 'Самый первый курс'
-        }
-        response = self.client.post(url, data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_update_cours(self):
-        '''тест на обновление курса'''
-        self.client.force_authenticate(user=self.user)
-        url = reverse('courses:coursses-detail', args=(self.cours.pk,))
-        data = {'name': 'Новая версия курса'}
-        response = self.client.patch(url, data)
+    def test_subscribe_to_course(self):
+        Subscription.objects.all().delete()
+        url = reverse('courses:subscription_create')
+        data = {'course_id': self.course.id}
+        response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Вы подписались')
+        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        url = reverse('courses:subscription_create')
+        data = {'course_id': self.course.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Вы отписались')
+
+    def test_subscription_list(self):
+        url = reverse('courses:subscription_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['course'], self.course.id)
+
+    def test_subscribe_to_course_no_ex(self):
+        Subscription.objects.all().delete()
+        url = reverse('courses:subscription_create')
+        data = {'course_id': ''}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_subscribe_to_course_no_au(self):
+        Subscription.objects.all().delete()
+        self.client.force_authenticate(user='')
+        url = reverse('courses:subscription_create')
+        data = {'course_id': self.course.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
