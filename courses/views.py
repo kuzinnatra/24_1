@@ -4,6 +4,7 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      UpdateAPIView)
 from rest_framework.viewsets import ModelViewSet
 from courses.models import Cours, Lesson
+from courses.paginators import CustomPagination
 from courses.serializers import CoursSerializer, LessonSerializer, CourseDetailSerializer
 from users.permissions import IsModer, IsOwner
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 
 class CoursViewSet(ModelViewSet):
     queryset = Cours.objects.all()
+    pagination_class = CustomPagination
     def get_serializer_class(self):
         if self.action == "retrieve":
             return CourseDetailSerializer
@@ -35,6 +37,7 @@ class LessonCreateApiView(CreateAPIView):
 class LessonListApiView(ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = CustomPagination
 
 
 class LessonRetrieveApiView(RetrieveAPIView):
