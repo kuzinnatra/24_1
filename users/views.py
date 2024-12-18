@@ -1,14 +1,11 @@
-
-
-from django.shortcuts import render
 from rest_framework import filters
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
 from users.models import User, Payment
 from users.serializers import UserSerializer, PaymentSerializer
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session
 
 
 class UserCreateApiView(CreateAPIView):
@@ -45,6 +42,16 @@ class UserDestroyApiView(DestroyAPIView):
 class PaymentCreateApiView(CreateAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        product = create_stripe_product(product_name='NEW')
+        price = create_stripe_price(product, payment.amount)
+        session_id, payment_link = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()
+        pass
 
 
 class PaymentListApiView(ListAPIView):
