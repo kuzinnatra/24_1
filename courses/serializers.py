@@ -12,6 +12,17 @@ class LessonSerializer(ModelSerializer):
 
 
 class CoursSerializer(ModelSerializer):
+    lessons = SerializerMethodField()
+    is_subscribed = SerializerMethodField()
+
+    def get_lessons(self, cours):
+        return [lesson.name for lesson in Lesson.objects.filter(cours=cours)]
+
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return Subscription.objects.filter(user=user, course=obj).exists()
+        return False
     class Meta:
         model = Cours
         fields = "__all__"

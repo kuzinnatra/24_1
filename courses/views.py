@@ -4,12 +4,14 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      UpdateAPIView, get_object_or_404)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from courses.models import Cours, Lesson, Subscription
 from courses.paginators import CustomPagination
 from courses.serializers import CoursSerializer, LessonSerializer, CourseDetailSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
 from rest_framework.permissions import IsAuthenticated
+from users.tasks import sub_update
 
 
 class CoursViewSet(ModelViewSet):
@@ -28,6 +30,16 @@ class CoursViewSet(ModelViewSet):
         elif self.action == 'destroy':
             self.permission_classes = (~IsModer | IsOwner,)
         return super().get_permissions()
+
+    def update(self, request, pk=None):
+        course = get_object_or_404(Cours, pk=pk)
+        serializer = self.get_serializer(course, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            sub_update.delay(pk)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LessonCreateApiView(CreateAPIView):
