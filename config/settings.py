@@ -66,14 +66,16 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",]
 }
 
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("NAME"),  # Название БД
-        "USER": "postgres",  # Пользователь для подключения
-        "PASSWORD": os.getenv("PASSWORD"),  # Пароль для этого пользователя
-        "HOST": os.getenv("HOST"),  # Адрес, на котором развернут сервер БД
-        "PORT": os.getenv("PORT"),  # Порт, на котором работает сервер БД
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT")
     }
 }
 
